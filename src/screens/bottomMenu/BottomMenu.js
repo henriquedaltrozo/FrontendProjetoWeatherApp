@@ -44,7 +44,15 @@ export default function BottomMenu({navigation}) {
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        tabBarStyle: {backgroundColor: '#fff'},
+        tabBarStyle: {
+          backgroundColor: '#fff',
+          borderTopLeftRadius: 35,
+          borderTopRightRadius: 35,
+          overflow: 'hidden',
+          position: 'absolute',
+          bottom: 0,
+          height: 54,
+        },
         tabBarActiveTintColor: '#4F4F4F',
         tabBarInactiveTintColor: '#000',
         headerShown: false,

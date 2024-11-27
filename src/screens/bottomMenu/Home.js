@@ -21,15 +21,21 @@ const Home = ({navigation, route}) => {
   const fetchWeather = useCallback(async () => {
     try {
       setLoading(true);
+
+      const [cityName, countryCode] = city.includes(' - ')
+        ? city.split(' - ')
+        : [city, null];
+      const query = countryCode
+        ? `${cityName.trim()},${countryCode.trim()}`
+        : cityName.trim();
+
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&lang=pt_br&appid=f068217c770fb057c6b31b1b1812ed9e`,
+        `https://api.openweathermap.org/data/2.5/forecast?q=${query}&units=metric&lang=pt_br&appid=f068217c770fb057c6b31b1b1812ed9e`,
       );
       const data = await response.json();
 
       if (data.cod !== '200' || !data.list || data.list.length === 0) {
-        throw new Error(
-          `Dados climáticos não disponíveis para a cidade: ${city}`,
-        );
+        throw new Error('Cidade não encontrada ou sem dados disponíveis.');
       }
 
       const now = new Date();
@@ -71,7 +77,7 @@ const Home = ({navigation, route}) => {
       console.error('Erro ao buscar dados climáticos:', error.message);
       Alert.alert(
         'Erro',
-        `Não foi possível buscar os dados climáticos. Cidade: ${city}. Verifique se a cidade está correta e tente novamente.`,
+        'Não foi possível buscar os dados climáticos. Verifique se a cidade está correta e tente novamente.',
       );
     } finally {
       setLoading(false);
@@ -197,6 +203,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 20,
     fontFamily: 'Montserrat-Bold',
+    marginTop: 40,
   },
   forecastList: {
     flexDirection: 'row',
@@ -235,8 +242,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 20,
-    marginTop: 20,
-    marginBottom: 35,
+    marginTop: 60,
+    marginBottom: 110,
     alignSelf: 'center',
   },
   buttonText: {

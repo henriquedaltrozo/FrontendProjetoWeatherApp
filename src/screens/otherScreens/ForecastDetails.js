@@ -7,24 +7,36 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const ForecastDetails = ({ navigation, route }) => {
-  const { city } = route.params || { city: 'Ijui' }; // Cidade padrão
+  const { city } = route.params || { city: 'Ijui' };
   const [forecastData, setForecastData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Função para buscar e processar os dados
   const fetchForecast = useCallback(async () => {
     try {
-      setLoading(true); // Ativar loading
+      setLoading(true);
+
+      // Extrai cidade e país (caso esteja no formato "Cidade - CódigoPaís")
+      const [cityName, countryCode] = city.split(' - ') || [city, null];
+      const query = countryCode
+        ? `${cityName.trim()},${countryCode.trim()}`
+        : cityName.trim();
+
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city},BR&units=metric&lang=pt_br&appid=f068217c770fb057c6b31b1b1812ed9e`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${query}&units=metric&lang=pt_br&appid=f068217c770fb057c6b31b1b1812ed9e`
       );
       const data = await response.json();
 
-      // Processar os dados para obter temperaturas máximas e mínimas por dia
+      if (data.cod !== '200' || !data.list || data.list.length === 0) {
+        throw new Error(
+          `Dados climáticos não disponíveis para a cidade: ${city}`
+        );
+      }
+
       const dailyData = {};
       data.list.forEach((item) => {
         const date = item.dt_txt.split(' ')[0];
@@ -34,7 +46,7 @@ const ForecastDetails = ({ navigation, route }) => {
             weather: item.weather[0],
             wind: item.wind.speed,
             humidity: item.main.humidity,
-            pop: item.pop || 0, // Probabilidade de precipitação (0 se não existir)
+            pop: item.pop || 0,
           };
         }
         dailyData[date].temps.push(item.main.temp);
@@ -53,15 +65,18 @@ const ForecastDetails = ({ navigation, route }) => {
         };
       });
 
-      setForecastData(dailyForecast.slice(0, 5)); // Exibir apenas os próximos 5 dias
+      setForecastData(dailyForecast.slice(0, 5));
     } catch (error) {
-      console.error('Erro ao buscar dados climáticos:', error);
+      console.error('Erro ao buscar dados climáticos:', error.message);
+      Alert.alert(
+        'Erro',
+        `Não foi possível buscar os dados climáticos. Cidade: ${city}. Verifique se a cidade está correta e tente novamente.`
+      );
     } finally {
-      setLoading(false); // Desativar loading
+      setLoading(false);
     }
-  }, [city]); // 'city' como dependência
+  }, [city]);
 
-  // useEffect para buscar os dados ao carregar a tela
   useEffect(() => {
     fetchForecast();
   }, [fetchForecast]);

@@ -7,9 +7,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import Login from './src/screens/authentication/Login';
 import BottomMenu from './src/screens/bottomMenu/BottomMenu';
 import Register from './src/screens/authentication/Register';
-import Home from './src/screens/bottomMenu/Home';
-import ForecastDetails from './src/screens/bottomMenu/ForecastDetails';
-import ChangeData from './src/screens/bottomMenu/ChangeData';
+import ForecastDetails from './src/screens/otherScreens/ForecastDetails';
+import ChangeData from './src/screens/otherScreens/ChangeData';
 
 const Stack = createStackNavigator();
 
@@ -35,16 +34,10 @@ function MyStack() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="Home"
-        component={Home}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
         name="ForecastDetails"
         component={ForecastDetails}
         options={{headerShown: false}}
       />
-
       <Stack.Screen
         name="ChangeData"
         component={ChangeData}

@@ -5,41 +5,53 @@ import {
   StyleSheet,
   View,
   Platform,
-  Alert,
+  Text,
 } from 'react-native';
-import {Button, Text, Icon} from 'react-native-elements';
+import {Button, Icon} from 'react-native-elements';
 import {TextInputMask} from 'react-native-masked-text';
 import LinearGradient from 'react-native-linear-gradient';
 import userService from '../../services/UserService';
 
 export default function ChangeData({navigation}) {
-  const [nome, setNome] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [senha, setSenha] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const updateData = async () => {
     const data = {
-      nome,
+      name,
       email,
-      telefone,
-      senha,
+      phone,
+      password,
     };
+
+    setSuccessMessage(null);
+    setErrorMessage(null);
 
     try {
       const response = await userService.update(data);
-      Alert.alert(
-        'Sucesso',
-        response.data.mensagem || 'Dados atualizados com sucesso',
-      );
+      if (response.data.status) {
+        setSuccessMessage(
+          response.data.message || 'Dados atualizados com sucesso',
+        );
+
+        // Redirecionar para a aba Profile dentro do BottomMenu após 2 segundos
+        setTimeout(() => {
+          navigation.navigate('BottomMenu', {screen: 'Profile'});
+        }, 2000);
+      } else {
+        setErrorMessage(response.data.message || 'Erro ao atualizar os dados');
+      }
     } catch (error) {
       console.error(
         'Erro ao atualizar:',
         error.response?.data || error.message,
       );
-      Alert.alert(
-        'Erro',
-        error.response?.data?.mensagem || 'Erro ao atualizar dados',
+      setErrorMessage(
+        error.response?.data?.message || 'Erro ao atualizar os dados',
       );
     }
   };
@@ -55,28 +67,16 @@ export default function ChangeData({navigation}) {
         <ScrollView style={styles.scrollStyle}>
           <Text style={styles.textTop}>Alterar Dados</Text>
 
-          <View style={styles.containerMask}>
-            <Icon name="user" type="font-awesome" color="#fff" />
-            <TextInputMask
-              type={'custom'}
-              options={{
-                mask: '*'.repeat(50),
-                translation: {
-                  S: {pattern: /[a-zA-Z\u00C0-\u017F\s]/},
-                },
-              }}
-              placeholder="Novo Nome"
-              placeholderTextColor="#fff"
-              value={nome}
-              onChangeText={setNome}
-              style={styles.maskedInput}
-            />
-          </View>
+          {/* Exibir mensagens de sucesso ou erro */}
+          {successMessage && (
+            <Text style={styles.successText}>{successMessage}</Text>
+          )}
+          {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
           <View style={styles.containerMask}>
             <Icon name="envelope" type="font-awesome" color="#fff" />
             <TextInputMask
-              placeholder="Novo E-mail"
+              placeholder="Confirme seu e-mail"
               placeholderTextColor="#fff"
               type={'custom'}
               options={{
@@ -90,9 +90,27 @@ export default function ChangeData({navigation}) {
           </View>
 
           <View style={styles.containerMask}>
+            <Icon name="user" type="font-awesome" color="#fff" />
+            <TextInputMask
+              type={'custom'}
+              options={{
+                mask: '*'.repeat(50),
+                translation: {
+                  S: {pattern: /[a-zA-Z\u00C0-\u017F\s]/},
+                },
+              }}
+              placeholder="Novo nome"
+              placeholderTextColor="#fff"
+              value={name}
+              onChangeText={setName}
+              style={styles.maskedInput}
+            />
+          </View>
+
+          <View style={styles.containerMask}>
             <Icon name="phone" type="font-awesome" color="#fff" />
             <TextInputMask
-              placeholder="Novo Telefone"
+              placeholder="Novo telefone"
               placeholderTextColor="#fff"
               type={'cel-phone'}
               options={{
@@ -100,8 +118,8 @@ export default function ChangeData({navigation}) {
                 withDDD: true,
                 dddMask: '(99) ',
               }}
-              value={telefone}
-              onChangeText={setTelefone}
+              value={phone}
+              onChangeText={setPhone}
               keyboardType="phone-pad"
               style={styles.maskedInput}
             />
@@ -110,14 +128,14 @@ export default function ChangeData({navigation}) {
           <View style={styles.containerMask}>
             <Icon name="lock" type="font-awesome" color="#fff" />
             <TextInputMask
-              placeholder="Nova Senha"
+              placeholder="Nova senha"
               placeholderTextColor="#fff"
               type={'custom'}
               options={{
                 mask: '*'.repeat(20),
               }}
-              value={senha}
-              onChangeText={setSenha}
+              value={password}
+              onChangeText={setPassword}
               secureTextEntry={true}
               style={styles.maskedInput}
             />
@@ -162,7 +180,7 @@ const styles = StyleSheet.create({
   },
   maskedInput: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 17,
     borderBottomColor: '#fff',
     borderBottomWidth: 1,
     color: '#fff',
@@ -200,5 +218,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
     fontFamily: 'Montserrat-Bold',
+  },
+  successText: {
+    alignSelf: 'center',
+    color: '#28a745',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+    marginBottom: 15,
+  },
+  errorText: {
+    alignSelf: 'center',
+    color: '#f00',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+    marginBottom: 15,
   },
 });

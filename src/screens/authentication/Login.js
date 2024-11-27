@@ -29,7 +29,7 @@ export default function Login({ navigation }) {
     }
   }, [navigation]);
 
-  const entrar = () => {
+  const enter = () => {
     let data = {
       email: email,
       password: password,
@@ -102,7 +102,7 @@ export default function Login({ navigation }) {
 
           <Input
             placeholder="Digite seu e-mail"
-            leftIcon={{ type: 'font-awesome', name: 'envelope', color: '#fff' }}
+            leftIcon={{ type: 'font-awesome', name: 'envelope', color: '#fff', size: 21}}
             onChangeText={value => setEmail(value)}
             autoCapitalize="none"
             keyboardType="email-address"
@@ -113,7 +113,7 @@ export default function Login({ navigation }) {
 
           <Input
             placeholder="Digite sua senha"
-            leftIcon={{ type: 'font-awesome', name: 'lock', color: '#fff' }}
+            leftIcon={{ type: 'font-awesome', name: 'lock', color: '#fff', size: 30}}
             onChangeText={value => setPassword(value)}
             autoCapitalize="none"
             secureTextEntry
@@ -133,7 +133,7 @@ export default function Login({ navigation }) {
               title="Acessar"
               buttonStyle={styles.buttonSignIn}
               titleStyle={styles.buttonSignInText}
-              onPress={entrar}
+              onPress={enter}
             />
           )}
 
@@ -220,9 +220,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
   },
   errorText: {
-    color: 'red',
-    fontSize: 14,
+    color: '#f00',
+    fontSize: 16,
     marginVertical: 10,
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: 'Montserrat-Medium',
   },
 });

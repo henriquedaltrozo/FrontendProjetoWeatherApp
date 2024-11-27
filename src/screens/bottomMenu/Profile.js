@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,25 +11,28 @@ import { Button } from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import userService from '../../services/UserService';
 
 const Profile = ({ navigation }) => {
-  const [profileImage, setProfileImage] = useState(require('../../../assets/default-user.png'));
-  const [nome, setNome] = useState('');
+  const [profileImage, setProfileImage] = useState(require('../../../assets/user-image.png'));
+  const [name, setName] = useState('');
 
   const carregarDadosUsuario = async () => {
     try {
       const { data } = await userService.getData();
-      setNome(data.nome);
+      setName(data.name);
     } catch (error) {
       console.error('Erro ao carregar os dados do usuário:', error);
       Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
     }
   };
 
-  useEffect(() => {
-    carregarDadosUsuario();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      carregarDadosUsuario();
+    }, [])
+  );
 
   const selectImage = () => {
     launchImageLibrary(
@@ -69,7 +72,7 @@ const Profile = ({ navigation }) => {
           <MaterialCommunityIcons name="pencil" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.greeting}>Olá, {nome || 'Usuário'}!</Text>
+      <Text style={styles.greeting}>Olá, {name || 'Usuário'}!</Text>
       <Button
         title="Alterar Dados"
         buttonStyle={styles.button}
