@@ -20,7 +20,6 @@ const ForecastDetails = ({ navigation, route }) => {
     try {
       setLoading(true);
 
-      // Extrai cidade e país (caso esteja no formato "Cidade - CódigoPaís")
       const [cityName, countryCode] = city.split(' - ') || [city, null];
       const query = countryCode
         ? `${cityName.trim()},${countryCode.trim()}`

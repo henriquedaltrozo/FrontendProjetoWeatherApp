@@ -60,7 +60,7 @@ const Search = ({ navigation }) => {
 
   const fetchSuggestions = async (query) => {
     if (query.trim().length < 3) {
-      setSuggestions([]); // Limpa sugestões se o texto for muito curto
+      setSuggestions([]);
       return;
     }
 

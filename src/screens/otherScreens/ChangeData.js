@@ -38,7 +38,6 @@ export default function ChangeData({navigation}) {
           response.data.message || 'Dados atualizados com sucesso',
         );
 
-        // Redirecionar para a aba Profile dentro do BottomMenu após 2 segundos
         setTimeout(() => {
           navigation.navigate('BottomMenu', {screen: 'Profile'});
         }, 2000);
